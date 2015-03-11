@@ -1,0 +1,84 @@
+Elm.Chess = Elm.Chess || {};
+Elm.Chess.make = function (_elm) {
+   "use strict";
+   _elm.Chess = _elm.Chess || {};
+   if (_elm.Chess.values)
+   return _elm.Chess.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Chess",
+   $Basics = Elm.Basics.make(_elm),
+   $GameManager = Elm.GameManager.make(_elm),
+   $GameModel = Elm.GameModel.make(_elm),
+   $InputModel = Elm.InputModel.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Rendering = Elm.Rendering.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var clock = $Time.every($Time.second);
+   var mayhemActivated = Elm.Native.Port.make(_elm).inboundSignal("mayhemActivated",
+   "Bool",
+   function (v) {
+      return typeof v === "boolean" ? v : _U.badPort("a boolean (true or false)",
+      v);
+   });
+   var currentTimestamp = Elm.Native.Port.make(_elm).inboundSignal("currentTimestamp",
+   "Int",
+   function (v) {
+      return typeof v === "number" ? v : _U.badPort("a number",
+      v);
+   });
+   var gameTypeChangedButton = Elm.Native.Port.make(_elm).inboundSignal("gameTypeChangedButton",
+   "Bool",
+   function (v) {
+      return typeof v === "boolean" ? v : _U.badPort("a boolean (true or false)",
+      v);
+   });
+   var newGameButton = Elm.Native.Port.make(_elm).inboundSignal("newGameButton",
+   "Bool",
+   function (v) {
+      return typeof v === "boolean" ? v : _U.badPort("a boolean (true or false)",
+      v);
+   });
+   var actions = $Signal.mergeMany(_L.fromArray([A2($Signal.map,
+                                                $InputModel.Move,
+                                                $InputModel.playerDirection)
+                                                ,A2($Signal.map,
+                                                $InputModel.NewGameButtonPressed,
+                                                newGameButton)
+                                                ,A2($Signal.map,
+                                                $InputModel.GameTypeChanged,
+                                                gameTypeChangedButton)
+                                                ,A2($Signal.map,
+                                                $InputModel.EnterPressed,
+                                                $InputModel.enterPressed)
+                                                ,A2($Signal.map,
+                                                $InputModel.MayhemActivated,
+                                                mayhemActivated)
+                                                ,A2($Signal.map,
+                                                $InputModel.Tick,
+                                                clock)]));
+   var input = A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   $InputModel.Input,
+   actions),
+   currentTimestamp);
+   var gameState = A3($Signal.foldp,
+   $GameManager.checkValidGame,
+   $GameModel.defaultGame,
+   input);
+   var main = A2($Signal._op["<~"],
+   $Rendering.display,
+   gameState);
+   _elm.Chess.values = {_op: _op
+                       ,actions: actions
+                       ,input: input
+                       ,gameState: gameState
+                       ,main: main
+                       ,clock: clock};
+   return _elm.Chess.values;
+};

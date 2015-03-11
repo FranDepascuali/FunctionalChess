@@ -1,0 +1,96 @@
+Elm.InputModel = Elm.InputModel || {};
+Elm.InputModel.make = function (_elm) {
+   "use strict";
+   _elm.InputModel = _elm.InputModel || {};
+   if (_elm.InputModel.values)
+   return _elm.InputModel.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "InputModel",
+   $Basics = Elm.Basics.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var enterPressed = $Keyboard.enter;
+   var Input = F2(function (a,b) {
+      return {_: {}
+             ,action: a
+             ,currentTimestamp: b};
+   });
+   var Tick = function (a) {
+      return {ctor: "Tick",_0: a};
+   };
+   var MayhemActivated = function (a) {
+      return {ctor: "MayhemActivated"
+             ,_0: a};
+   };
+   var EnterPressed = function (a) {
+      return {ctor: "EnterPressed"
+             ,_0: a};
+   };
+   var CurrentTimestampChanged = function (a) {
+      return {ctor: "CurrentTimestampChanged"
+             ,_0: a};
+   };
+   var GameTypeChanged = function (a) {
+      return {ctor: "GameTypeChanged"
+             ,_0: a};
+   };
+   var NewGameButtonPressed = function (a) {
+      return {ctor: "NewGameButtonPressed"
+             ,_0: a};
+   };
+   var Move = function (a) {
+      return {ctor: "Move",_0: a};
+   };
+   var None = {ctor: "None"};
+   var Right = {ctor: "Right"};
+   var Left = {ctor: "Left"};
+   var Down = {ctor: "Down"};
+   var Up = {ctor: "Up"};
+   var playerDirection = function () {
+      var toDirection = function (ds) {
+         return _U.eq(ds,
+         {_: {}
+         ,x: 0
+         ,y: 1}) ? Up : _U.eq(ds,
+         {_: {}
+         ,x: 0
+         ,y: -1}) ? Down : _U.eq(ds,
+         {_: {}
+         ,x: 1
+         ,y: 0}) ? Right : _U.eq(ds,
+         {_: {}
+         ,x: -1
+         ,y: 0}) ? Left : None;
+      };
+      return A2($Signal.merge,
+      A2($Signal._op["<~"],
+      toDirection,
+      $Keyboard.arrows),
+      A2($Signal._op["<~"],
+      toDirection,
+      $Keyboard.wasd));
+   }();
+   _elm.InputModel.values = {_op: _op
+                            ,Up: Up
+                            ,Down: Down
+                            ,Left: Left
+                            ,Right: Right
+                            ,None: None
+                            ,Move: Move
+                            ,NewGameButtonPressed: NewGameButtonPressed
+                            ,GameTypeChanged: GameTypeChanged
+                            ,CurrentTimestampChanged: CurrentTimestampChanged
+                            ,EnterPressed: EnterPressed
+                            ,MayhemActivated: MayhemActivated
+                            ,Tick: Tick
+                            ,Input: Input
+                            ,playerDirection: playerDirection
+                            ,enterPressed: enterPressed};
+   return _elm.InputModel.values;
+};

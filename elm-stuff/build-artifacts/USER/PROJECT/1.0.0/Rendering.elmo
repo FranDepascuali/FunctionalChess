@@ -1,0 +1,259 @@
+Elm.Rendering = Elm.Rendering || {};
+Elm.Rendering.make = function (_elm) {
+   "use strict";
+   _elm.Rendering = _elm.Rendering || {};
+   if (_elm.Rendering.values)
+   return _elm.Rendering.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Rendering",
+   $Basics = Elm.Basics.make(_elm),
+   $Board = Elm.Board.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $GameModel = Elm.GameModel.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Logic = Elm.Logic.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Piece = Elm.Piece.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $Tile = Elm.Tile.make(_elm),
+   $Utils = Elm.Utils.make(_elm);
+   var wonOverlayColor = A4($Color.rgba,
+   237,
+   194,
+   46,
+   0.5);
+   var wonTextSize = function (tile) {
+      return 50;
+   };
+   var wonTextColor = function (tile) {
+      return $Color.black;
+   };
+   var wonTextStyle = function (tile) {
+      return {_: {}
+             ,bold: true
+             ,color: wonTextColor(tile)
+             ,height: $Maybe.Just(wonTextSize(tile))
+             ,italic: false
+             ,line: $Maybe.Nothing
+             ,typeface: _L.fromArray(["Helvetica Neue"
+                                     ,"Arial"
+                                     ,"sans-serif"])};
+   };
+   var wonOverlayStyle = wonTextStyle($Maybe.Just(A2($Piece.Piece,
+   $Piece.Black,
+   $Piece.King)));
+   var displayNormalTile = function (_v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var _v4 = {ctor: "_Tuple2"
+                           ,_0: $Utils.isEven(_v0._0)
+                           ,_1: $Utils.isEven(_v0._1)};
+                 switch (_v4.ctor)
+                 {case "_Tuple2": switch (_v4._0)
+                      {case false: switch (_v4._1)
+                           {case false:
+                              return $Color.lightBrown;}
+                           break;
+                         case true: switch (_v4._1)
+                           {case true:
+                              return $Color.lightBrown;}
+                           break;}
+                      break;}
+                 return $Color.darkBrown;
+              }();}
+         _U.badCase($moduleName,
+         "between lines 40 and 43");
+      }();
+   };
+   var canMoveTile = F5(function (board,
+   color,
+   tile,
+   from,
+   to) {
+      return A3($Utils.mapWithDefault,
+      function (piece) {
+         return A5($Logic.canMakeMove,
+         board,
+         color,
+         piece,
+         from,
+         to);
+      },
+      tile,
+      false);
+   });
+   var tileColor = F3(function (tile,
+   position,
+   gameState) {
+      return _U.eq(gameState.mayhem,
+      true) ? displayNormalTile(position) : _U.eq(position,
+      gameState.cursorAt) && (_U.eq(gameState.turn,
+      $Piece.White) || !_U.eq(gameState.gameType,
+      $GameModel.OneVSComputer)) ? $Color.red : !_U.eq(gameState.selected,
+      $Maybe.Nothing) ? function () {
+         var _v7 = gameState.selected;
+         switch (_v7.ctor)
+         {case "Just":
+            return A5(canMoveTile,
+              gameState.board,
+              gameState.turn,
+              A2($Board.readTile,
+              _v7._0,
+              gameState.board),
+              _v7._0,
+              position) ? $Color.blue : displayNormalTile(position);}
+         _U.badCase($moduleName,
+         "between lines 31 and 33");
+      }() : displayNormalTile(position);
+   });
+   var darkgreen = A3($Color.rgb,
+   77,
+   153,
+   60);
+   var tileMargin = 8;
+   var tileSize = 70;
+   var displayTile = F3(function (tile,
+   position,
+   gameState) {
+      return function () {
+         var tileBackground = $Graphics$Collage.filled(A3(tileColor,
+         tile,
+         position,
+         gameState))($Graphics$Collage.square(tileSize));
+         return function () {
+            switch (tile.ctor)
+            {case "Just":
+               switch (tile._0.ctor)
+                 {case "Piece":
+                    return A3($Graphics$Collage.collage,
+                      $Basics.round(tileSize),
+                      $Basics.round(tileSize),
+                      _L.fromArray([tileBackground
+                                   ,$Graphics$Collage.toForm(A3($Graphics$Element.image,
+                                   75,
+                                   75,
+                                   A2($Basics._op["++"],
+                                   "images/",
+                                   A2($Basics._op["++"],
+                                   $Basics.toString(tile._0._0),
+                                   A2($Basics._op["++"],
+                                   "_",
+                                   A2($Basics._op["++"],
+                                   $Basics.toString(tile._0._1),
+                                   ".jpg"))))))]));}
+                 break;
+               case "Nothing":
+               return A3($Graphics$Collage.collage,
+                 $Basics.round(tileSize),
+                 $Basics.round(tileSize),
+                 _L.fromArray([tileBackground]));}
+            _U.badCase($moduleName,
+            "between lines 65 and 74");
+         }();
+      }();
+   });
+   var displayTileAtCoordinates = F2(function (_v13,
+   gameState) {
+      return function () {
+         switch (_v13.ctor)
+         {case "_Tuple3":
+            return function () {
+                 var p = {ctor: "_Tuple2"
+                         ,_0: (tileSize + tileMargin) * ($Basics.toFloat(_v13._2) - ($Basics.toFloat($Utils.boardSize) - 1) / 2)
+                         ,_1: -1 * (tileSize + tileMargin) * ($Basics.toFloat(_v13._1) - ($Basics.toFloat($Utils.boardSize) - 1) / 2)};
+                 return $Graphics$Collage.move(p)($Graphics$Collage.toForm(A3(displayTile,
+                 _v13._0,
+                 {ctor: "_Tuple2"
+                 ,_0: _v13._1
+                 ,_1: _v13._2},
+                 gameState)));
+              }();}
+         _U.badCase($moduleName,
+         "between lines 78 and 82");
+      }();
+   });
+   var boardWidth = $Basics.toFloat($Utils.boardSize) * tileSize + (1 + $Basics.toFloat($Utils.boardSize)) * tileMargin;
+   var displayGrid = function (gameState) {
+      return function () {
+         var tiles = $List.map(function (position) {
+            return A2(displayTileAtCoordinates,
+            position,
+            gameState);
+         })($Board.tilesWithCoordinates(gameState.board));
+         var gridBox = $Graphics$Collage.filled(A3($Color.rgb,
+         187,
+         173,
+         160))($Graphics$Collage.square(boardWidth));
+         return A3($Graphics$Collage.collage,
+         $Basics.round(boardWidth),
+         $Basics.round(boardWidth),
+         A2($Basics._op["++"],
+         _L.fromArray([gridBox]),
+         tiles));
+      }();
+   };
+   var displayOverlay = F3(function (s,
+   c,
+   t) {
+      return A3($Graphics$Collage.collage,
+      $Basics.round(boardWidth),
+      $Basics.round(boardWidth),
+      _L.fromArray([$Graphics$Collage.filled(c)($Graphics$Collage.square(boardWidth))
+                   ,$Graphics$Collage.toForm($Graphics$Element.centered($Text.style(s)($Text.fromString(t))))]));
+   });
+   var displayWonOverlay = function (message) {
+      return A3(displayOverlay,
+      wonOverlayStyle,
+      wonOverlayColor,
+      message);
+   };
+   var applyOverlay = F2(function (overlay,
+   board) {
+      return A3($Graphics$Collage.collage,
+      $Basics.round(boardWidth),
+      $Basics.round(boardWidth),
+      _L.fromArray([$Graphics$Collage.toForm(board)
+                   ,$Graphics$Collage.toForm(overlay)]));
+   });
+   var display = function (gameState) {
+      return function () {
+         var _v18 = gameState.gameProgress;
+         switch (_v18.ctor)
+         {case "BlackWon":
+            return applyOverlay(displayWonOverlay("Black wins"));
+            case "WhiteWon":
+            return applyOverlay(displayWonOverlay("White wins!"));}
+         return $Basics.identity;
+      }()(displayGrid(gameState));
+   };
+   _elm.Rendering.values = {_op: _op
+                           ,tileSize: tileSize
+                           ,tileMargin: tileMargin
+                           ,darkgreen: darkgreen
+                           ,tileColor: tileColor
+                           ,canMoveTile: canMoveTile
+                           ,displayNormalTile: displayNormalTile
+                           ,wonTextColor: wonTextColor
+                           ,wonTextSize: wonTextSize
+                           ,wonTextStyle: wonTextStyle
+                           ,displayTile: displayTile
+                           ,displayTileAtCoordinates: displayTileAtCoordinates
+                           ,boardWidth: boardWidth
+                           ,displayGrid: displayGrid
+                           ,displayOverlay: displayOverlay
+                           ,wonOverlayStyle: wonOverlayStyle
+                           ,wonOverlayColor: wonOverlayColor
+                           ,displayWonOverlay: displayWonOverlay
+                           ,applyOverlay: applyOverlay
+                           ,display: display};
+   return _elm.Rendering.values;
+};

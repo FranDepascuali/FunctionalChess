@@ -1,0 +1,367 @@
+Elm.Logic = Elm.Logic || {};
+Elm.Logic.make = function (_elm) {
+   "use strict";
+   _elm.Logic = _elm.Logic || {};
+   if (_elm.Logic.values)
+   return _elm.Logic.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Logic",
+   $Basics = Elm.Basics.make(_elm),
+   $Board = Elm.Board.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Piece = Elm.Piece.make(_elm),
+   $Random = Elm.Random.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Tile = Elm.Tile.make(_elm),
+   $Utils = Elm.Utils.make(_elm);
+   var getTail = function (list) {
+      return A2($Maybe.withDefault,
+      _L.fromArray([]),
+      $List.tail(list));
+   };
+   var moveIsValid = F4(function (board,
+   piece,
+   from,
+   to) {
+      return function () {
+         var difCol = $Basics.snd(to) - $Basics.snd(from);
+         var difRow = $Basics.fst(to) - $Basics.fst(from);
+         return function () {
+            switch (piece.ctor)
+            {case "Piece":
+               switch (piece._1.ctor)
+                 {case "Bishop":
+                    return A2($Piece.canMoveBishop,
+                      $Basics.abs(difCol),
+                      $Basics.abs(difRow));
+                    case "Knight":
+                    return A2($Piece.canMoveKnight,
+                      $Basics.abs(difCol),
+                      $Basics.abs(difRow));
+                    case "Queen":
+                    return A2($Piece.canMoveQueen,
+                      $Basics.abs(difCol),
+                      $Basics.abs(difRow));
+                    case "Rook":
+                    return A2($Piece.canMoveRook,
+                      difCol,
+                      difRow);}
+                 switch (piece._0.ctor)
+                 {case "Black":
+                    switch (piece._1.ctor)
+                      {case "Pawn":
+                         return A3($Board.canMoveBlackPawn,
+                           board,
+                           from,
+                           to);}
+                      break;
+                    case "White":
+                    switch (piece._1.ctor)
+                      {case "Pawn":
+                         return A3($Board.canMoveWhitePawn,
+                           board,
+                           from,
+                           to);}
+                      break;}
+                 switch (piece._1.ctor)
+                 {case "King":
+                    return A2($Piece.canMoveKing,
+                      $Basics.abs(difRow),
+                      $Basics.abs(difCol));}
+                 break;}
+            _U.badCase($moduleName,
+            "between lines 65 and 72");
+         }();
+      }();
+   });
+   var generatePossiblePositions = F3(function (board,
+   piece,
+   from) {
+      return $List.filter(A3(moveIsValid,
+      board,
+      piece,
+      from))($Utils.allPositions);
+   });
+   var getRandomPositionsForPiece = F4(function (board,
+   piece,
+   from,
+   seed) {
+      return A2($Utils.shuffle,
+      A3(generatePossiblePositions,
+      board,
+      piece,
+      from),
+      seed);
+   });
+   var canAttack = F4(function (board,
+   piece,
+   from,
+   to) {
+      return function () {
+         switch (piece.ctor)
+         {case "Piece":
+            switch (piece._0.ctor)
+              {case "Black":
+                 switch (piece._1.ctor)
+                   {case "Pawn":
+                      return A3($Board.blackPawnCanAttack,
+                        from,
+                        to,
+                        board);}
+                   break;
+                 case "White":
+                 switch (piece._1.ctor)
+                   {case "Pawn":
+                      return A3($Board.whitePawnCanAttack,
+                        from,
+                        to,
+                        board);}
+                   break;}
+              break;}
+         return false;
+      }();
+   });
+   var notOtherPieceInPath = F4(function (board,
+   piece,
+   from,
+   to) {
+      return function () {
+         var positions = A3($Piece.piecePossibleMoves,
+         piece,
+         from,
+         to);
+         return function () {
+            switch (piece.ctor)
+            {case "Piece":
+               switch (piece._1.ctor)
+                 {case "King": return true;
+                    case "Knight": return true;}
+                 break;}
+            return A2($List.all,
+            function (position) {
+               return _U.eq(A2($Board.readTile,
+               position,
+               board),
+               $Maybe.Nothing);
+            },
+            positions);
+         }();
+      }();
+   });
+   var pieceCanReachPosition = F4(function (board,
+   piece,
+   from,
+   to) {
+      return A4(notOtherPieceInPath,
+      board,
+      piece,
+      from,
+      to) && (A4(moveIsValid,
+      board,
+      piece,
+      from,
+      to) || A4(canAttack,
+      board,
+      piece,
+      from,
+      to));
+   });
+   var inCheck = F2(function (board,
+   color) {
+      return function () {
+         var otherColorPieces = A2($Board.getPiecesForColor,
+         board,
+         $Piece.switchColor(color));
+         var pieces = $Board.getPiecesFromBoard(board);
+         var king = $List.head(A2($List.filter,
+         function (_v9) {
+            return function () {
+               switch (_v9.ctor)
+               {case "_Tuple3":
+                  return _U.eq(_v9._0,
+                    A2($Piece.Piece,
+                    color,
+                    $Piece.King));}
+               _U.badCase($moduleName,
+               "on line 49, column 60 to 81");
+            }();
+         },
+         pieces));
+         return function () {
+            switch (king.ctor)
+            {case "Just":
+               return A2($List.any,
+                 function (_v16) {
+                    return function () {
+                       switch (_v16.ctor)
+                       {case "_Tuple3":
+                          return A4(pieceCanReachPosition,
+                            board,
+                            _v16._0,
+                            {ctor: "_Tuple2"
+                            ,_0: _v16._1
+                            ,_1: _v16._2},
+                            {ctor: "_Tuple2"
+                            ,_0: $Piece.second(king._0)
+                            ,_1: $Piece.thrd(king._0)});}
+                       _U.badCase($moduleName,
+                       "on line 53, column 71 to 150");
+                    }();
+                 },
+                 otherColorPieces);
+               case "Nothing": return false;}
+            _U.badCase($moduleName,
+            "between lines 51 and 53");
+         }();
+      }();
+   });
+   var notInCheck = F2(function (board,
+   color) {
+      return $Basics.not(A2(inCheck,
+      board,
+      color));
+   });
+   var canMakeMove = F5(function (board,
+   color,
+   piece,
+   from,
+   to) {
+      return function () {
+         var tileTo = A2($Board.readTile,
+         to,
+         board);
+         return A2($Piece.pieceColorMatches,
+         color,
+         piece) && ($Basics.not(A2($Tile.colorMatches,
+         color,
+         tileTo)) && (A4(pieceCanReachPosition,
+         board,
+         piece,
+         from,
+         to) && function () {
+            var newBoard = A3($Board.makeMove,
+            board,
+            from,
+            to);
+            return A2(notInCheck,
+            newBoard,
+            color);
+         }()));
+      }();
+   });
+   var evaluatePossibleMovement = F4(function (board,
+   color,
+   pieces,
+   seed) {
+      return function () {
+         var _v21 = $List.head(pieces);
+         switch (_v21.ctor)
+         {case "Just":
+            switch (_v21._0.ctor)
+              {case "_Tuple3":
+                 return function () {
+                      var $ = A4(getRandomPositionsForPiece,
+                      board,
+                      _v21._0._0,
+                      {ctor: "_Tuple2"
+                      ,_0: _v21._0._1
+                      ,_1: _v21._0._2},
+                      seed),
+                      randomPositions = $._0,
+                      newSeed = $._1;
+                      var move = A2($Utils.firstThatSatisfies,
+                      function (randomPosition) {
+                         return A5(canMakeMove,
+                         board,
+                         color,
+                         _v21._0._0,
+                         {ctor: "_Tuple2"
+                         ,_0: _v21._0._1
+                         ,_1: _v21._0._2},
+                         randomPosition);
+                      },
+                      $Maybe.Just(randomPositions));
+                      return function () {
+                         switch (move.ctor)
+                         {case "Just":
+                            return $Maybe.Just({ctor: "_Tuple3"
+                                               ,_0: {ctor: "_Tuple2"
+                                                    ,_0: _v21._0._1
+                                                    ,_1: _v21._0._2}
+                                               ,_1: move._0
+                                               ,_2: newSeed});
+                            case "Nothing":
+                            return A4(evaluatePossibleMovement,
+                              board,
+                              color,
+                              getTail(pieces),
+                              newSeed);}
+                         _U.badCase($moduleName,
+                         "between lines 86 and 88");
+                      }();
+                   }();}
+              break;
+            case "Nothing":
+            return A2($Debug.log,
+              "There are no movements",
+              $Maybe.Nothing);}
+         _U.badCase($moduleName,
+         "between lines 81 and 88");
+      }();
+   });
+   var loopUntilCanMovePiece = F4(function (board,
+   color,
+   seed,
+   pieces) {
+      return function () {
+         var $ = A2($Utils.shuffle,
+         pieces,
+         seed),
+         shuffledPieces = $._0,
+         newSeed = $._1;
+         return A4(evaluatePossibleMovement,
+         board,
+         color,
+         shuffledPieces,
+         newSeed);
+      }();
+   });
+   var canMoveTile = F5(function (board,
+   color,
+   tile,
+   from,
+   to) {
+      return A3($Utils.mapWithDefault,
+      function (piece) {
+         return A5(canMakeMove,
+         board,
+         color,
+         piece,
+         from,
+         to);
+      },
+      tile,
+      false);
+   });
+   _elm.Logic.values = {_op: _op
+                       ,canMoveTile: canMoveTile
+                       ,canMakeMove: canMakeMove
+                       ,pieceCanReachPosition: pieceCanReachPosition
+                       ,notOtherPieceInPath: notOtherPieceInPath
+                       ,notInCheck: notInCheck
+                       ,inCheck: inCheck
+                       ,canAttack: canAttack
+                       ,moveIsValid: moveIsValid
+                       ,loopUntilCanMovePiece: loopUntilCanMovePiece
+                       ,evaluatePossibleMovement: evaluatePossibleMovement
+                       ,getTail: getTail
+                       ,getRandomPositionsForPiece: getRandomPositionsForPiece
+                       ,generatePossiblePositions: generatePossiblePositions};
+   return _elm.Logic.values;
+};

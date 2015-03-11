@@ -1,0 +1,85 @@
+Elm.GameModel = Elm.GameModel || {};
+Elm.GameModel.make = function (_elm) {
+   "use strict";
+   _elm.GameModel = _elm.GameModel || {};
+   if (_elm.GameModel.values)
+   return _elm.GameModel.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "GameModel",
+   $Basics = Elm.Basics.make(_elm),
+   $Board = Elm.Board.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Piece = Elm.Piece.make(_elm),
+   $Random = Elm.Random.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Utils = Elm.Utils.make(_elm);
+   var GameState = function (a) {
+      return function (b) {
+         return function (c) {
+            return function (d) {
+               return function (e) {
+                  return function (f) {
+                     return function (g) {
+                        return function (h) {
+                           return function (i) {
+                              return function (j) {
+                                 return {_: {}
+                                        ,board: a
+                                        ,cursorAt: e
+                                        ,gameProgress: b
+                                        ,gameType: f
+                                        ,inCheck: h
+                                        ,mayhem: i
+                                        ,player: g
+                                        ,seed: j
+                                        ,selected: d
+                                        ,turn: c};
+                              };
+                           };
+                        };
+                     };
+                  };
+               };
+            };
+         };
+      };
+   };
+   var Computer = {ctor: "Computer"};
+   var Human = {ctor: "Human"};
+   var OneVSComputer = {ctor: "OneVSComputer"};
+   var OneVSOne = {ctor: "OneVSOne"};
+   var BlackWon = {ctor: "BlackWon"};
+   var WhiteWon = {ctor: "WhiteWon"};
+   var InProgress = {ctor: "InProgress"};
+   var defaultGame = {_: {}
+                     ,board: $Board.startBoard
+                     ,cursorAt: {ctor: "_Tuple2"
+                                ,_0: 6
+                                ,_1: 4}
+                     ,gameProgress: InProgress
+                     ,gameType: OneVSOne
+                     ,inCheck: $Maybe.Nothing
+                     ,mayhem: false
+                     ,player: Human
+                     ,seed: $Maybe.Nothing
+                     ,selected: $Maybe.Nothing
+                     ,turn: $Piece.White};
+   var Stopped = {ctor: "Stopped"};
+   _elm.GameModel.values = {_op: _op
+                           ,Stopped: Stopped
+                           ,InProgress: InProgress
+                           ,WhiteWon: WhiteWon
+                           ,BlackWon: BlackWon
+                           ,OneVSOne: OneVSOne
+                           ,OneVSComputer: OneVSComputer
+                           ,Human: Human
+                           ,Computer: Computer
+                           ,GameState: GameState
+                           ,defaultGame: defaultGame};
+   return _elm.GameModel.values;
+};

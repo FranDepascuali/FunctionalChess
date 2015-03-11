@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <title>Functional Chess!</title>
+    <script type="text/javascript" src="elm.js"></script>
+    <link rel="stylesheet" type="text/css" href="functionalChess.css">
+  </head>
+
+  <body class="body">
+    <div>
+      <div id="chess" class="div1"></div>
+      <div class="white div2">
+        <h1>Functional Chess</h1>
+        <div>
+          <button onMouseUp="sendNewGame(false)" onMouseDown="sendNewGame(true)" id="newGameButton"><strong>New Game</strong></button>
+          <button onMouseUp="sendGameTypeChanged(false)" onMouseDown="sendGameTypeChanged(true)" id="gameTypeChangedButton"><strong>Change game type </strong></button>
+          <button onMouseDown="sendMayhemActivated(true)" id="mayhem"><strong>MAYHEM!</strong></button>
+        </div>
+        <div class= "smallMargins">
+          <p class="inline">Game type: </p><p id="gameType" class="inline">Player vs player</p><p id="mayhemActive" class="hidden">Computer vs computer</p>
+        </div>
+        <h2>Instructions:</h2>
+        <ul>
+          <li>Move the cursor(red box) with keyboard arrows or wasd</li>
+          <li>Select the piece you want to move with enter</li>
+          <li>Select the tile where you'd like to move the piece to with enter</li>
+          <p> Mayhem mode: computer vs computer </p>
+          <p class="inline"> You can find the full implementation in </p><a class="inline white" href="https://github.com/FranDepascuali/FunctionalChess">github</a>
+        </ul>
+      </div>
+      <div class="clear"></div>
+   </div>
+  </body>
+
+  <script type="text/javascript">
+    document.addEventListener("keydown", function (e) { // Prevent arrow keys from scrolling page
+          if([37,38,39,40].indexOf(e.keyCode) > -1){
+            e.preventDefault();
+          }
+        }, false);
+
+    setInterval(function(){ chessElm.ports.currentTimestamp.send(Date.now());},3000);
+
+    var chessDiv = document.getElementById('chess');
+    var chessElm = Elm.embed(Elm.Chess, chessDiv, { newGameButton: false, gameTypeChangedButton: false, currentTimestamp: Date.now(), mayhemActivated: false });
+
+    function sendNewGame(a) { // A function to send the boolean status of the new game button to the elm component via its newGameButton port.
+      chessElm.ports.newGameButton.send(a);
+    }
+
+    function sendMayhemActivated(a) {
+      mayhem = document.getElementById("mayhemActive")
+      gameType = document.getElementById("gameType")
+      if (mayhem.classList.contains("hidden")) {
+        gameType.classList.add("hidden");
+        mayhem.classList.add("inline");
+        mayhem.classList.remove("hidden");
+      } else {
+        mayhem.classList.add("hidden");
+        gameType.classList.add("inline");
+        gameType.classList.remove("hidden");
+      }
+      chessElm.ports.mayhemActivated.send(a);
+    }
+
+    function sendGameTypeChanged(a) {
+      chessElm.ports.gameTypeChangedButton.send(a);
+      element = document.getElementById("gameType");
+
+      if (a) {
+        if (element.innerHTML == "Player vs player") {
+          element.innerHTML = "Player vs computer";
+        } else if (element.innerHTML == "Player vs computer") {
+          element.innerHTML = "Player vs player";
+        }
+      }
+    }
+
+  </script>
+
+</html>
