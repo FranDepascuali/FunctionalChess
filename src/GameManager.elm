@@ -44,8 +44,15 @@ stepGame input gameState =  if
                                     EnterPressed True -> playerMakingMove input gameState
                                     otherwise -> gameState
 
+--Color is already switched
 checkPostCondition: GameState -> GameState
-checkPostCondition gameState = gameState
+checkPostCondition gameState = if gameState.gameType == OneVSOne && not (gameState.mayhem)
+                                  then if | gameState.turn == Piece.Black && inCheck gameState.board Piece.Black
+                                        -> { gameState | gameProgress <- colorLost Piece.Black }
+                                        | gameState.turn == Piece.White && inCheck gameState.board Piece.White
+                                        -> { gameState | gameProgress <- colorLost Piece.White }
+                                        | otherwise -> gameState
+                               else  gameState
 
 switchMayhem: GameState -> GameState
 switchMayhem g = let x = not g.mayhem in { g | mayhem <- x }
@@ -92,7 +99,7 @@ makeRandomMove gameState = let
                                   maybeMovement = loopUntilCanMovePiece gameState.board gameState.turn seed pieces
                                 in case maybeMovement of
                                   Nothing -> { gameState | gameProgress <- colorLost gameState.turn }
-                                  Just (from, to, newSeed) -> attemptMove gameState (readTile from gameState.board) from to (\gs -> { gs | seed <- Just (newSeed) })
+                                  Just (from, to, newSeed) -> let newGameState = makeMove gameState (readTile from gameState.board) from to in { newGameState | seed <- Just (newSeed) }
 
 colorLost: PlayerColor -> Progress
 colorLost color = case color of

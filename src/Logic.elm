@@ -79,7 +79,7 @@ loopUntilCanMovePiece board color seed pieces = let
 
 evaluatePossibleMovement: Board -> PieceColor -> List(Piece, Int, Int) -> Seed -> Maybe(Position, Position, Seed)
 evaluatePossibleMovement board color pieces seed = case head pieces of
-                                        Nothing -> Debug.log "There are no movements" Nothing
+                                        Nothing -> Nothing
                                         Just (piece,x,y) -> let
                                                                 (randomPositions, newSeed) = getRandomPositionsForPiece board piece (x, y) seed
                                                                 move = firstThatSatisfies (\randomPosition -> canMakeMove board color piece (x,y) randomPosition) (Just randomPositions)
