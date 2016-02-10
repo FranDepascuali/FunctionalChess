@@ -1,17 +1,17 @@
 module Rendering where
 
 import Utils exposing (..)
-
 import GameModel exposing (..)
+import Tile exposing (..)
+import Board exposing (..)
+import Logic exposing (..)
+import Piece exposing (..)
+
 import Color exposing (..)
 import Text exposing (..)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 import List exposing (..)
-import Tile exposing (..)
-import Piece exposing (..)
-import Board exposing (..)
-import Logic exposing (..)
 
 tileSize: Float
 tileSize = 70

@@ -5,7 +5,7 @@ import Keyboard
 
 type Direction = Up | Down | Left | Right | None
 
-type Update = Move Direction | NewGameButtonPressed Bool | GameTypeChanged Bool | CurrentTimestampChanged Int | EnterPressed Bool | MayhemActivated Bool | Tick Float
+type Update = Move Direction | NewGameButtonPressed Bool | GameTypeChanged Bool | EnterPressed Bool | MayhemActivated Bool | Tick Float
 
 type alias Input = { -- inputs that the game will depend of
     action: Update, -- the user actions

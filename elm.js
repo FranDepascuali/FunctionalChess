@@ -2291,7 +2291,6 @@ Elm.GameManager.make = function (_elm) {
    $moduleName = "GameManager",
    $Basics = Elm.Basics.make(_elm),
    $Board = Elm.Board.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
    $GameModel = Elm.GameModel.make(_elm),
    $InputModel = Elm.InputModel.make(_elm),
    $List = Elm.List.make(_elm),
@@ -2323,7 +2322,7 @@ Elm.GameManager.make = function (_elm) {
             case "White":
             return $GameModel.BlackWon;}
          _U.badCase($moduleName,
-         "between lines 106 and 108");
+         "between lines 103 and 105");
       }();
    };
    var switchGameType = function (gameState) {
@@ -2336,7 +2335,7 @@ Elm.GameManager.make = function (_elm) {
                                case "OneVSOne":
                                return $GameModel.OneVSComputer;}
                             _U.badCase($moduleName,
-                            "between lines 85 and 88");
+                            "between lines 82 and 85");
                          }()]],
       gameState);
    };
@@ -2361,7 +2360,7 @@ Elm.GameManager.make = function (_elm) {
                                 ,_1: 4}]],
               gameState);}
          _U.badCase($moduleName,
-         "between lines 65 and 69");
+         "between lines 62 and 66");
       }();
    };
    var makeMove = F4(function (g,
@@ -2386,7 +2385,7 @@ Elm.GameManager.make = function (_elm) {
                                                   case "White":
                                                   return $Piece.Black;}
                                                _U.badCase($moduleName,
-                                               "between lines 119 and 122");
+                                               "between lines 116 and 119");
                                             }()]],
       g));
    });
@@ -2428,13 +2427,13 @@ Elm.GameManager.make = function (_elm) {
                                              ,colorLost(gameState.turn)]],
                             gameState);}
                        _U.badCase($moduleName,
-                       "between lines 101 and 103");
+                       "between lines 98 and 100");
                     }();
                  }();
                case "Nothing":
                return gameState;}
             _U.badCase($moduleName,
-            "between lines 96 and 103");
+            "between lines 93 and 100");
          }();
       }();
    };
@@ -2512,7 +2511,7 @@ Elm.GameManager.make = function (_elm) {
                       break;}
                  break;}
             _U.badCase($moduleName,
-            "between lines 75 and 79");
+            "between lines 72 and 76");
          }();
       }();
    });
@@ -2575,9 +2574,7 @@ Elm.GameManager.make = function (_elm) {
                                         ,$Maybe.Just($Random.initialSeed(input.currentTimestamp))]],
          gameState);
          return function () {
-            var _v20 = A2($Debug.log,
-            "action",
-            input.action);
+            var _v20 = input.action;
             switch (_v20.ctor)
             {case "GameTypeChanged":
                switch (_v20._0)
@@ -2604,12 +2601,9 @@ Elm.GameManager.make = function (_elm) {
    });
    var checkValidGame = F2(function (input,
    gameState) {
-      return function () {
-         var newGameState = A2(checkPreConditions,
-         input,
-         gameState);
-         return gameFinished(newGameState) ? gameState : checkPostCondition(stepGame(input)(newGameState));
-      }();
+      return gameFinished(gameState) ? gameState : checkPostCondition(stepGame(input)(A2(checkPreConditions,
+      input,
+      gameState)));
    });
    _elm.GameManager.values = {_op: _op
                              ,checkValidGame: checkValidGame
@@ -2650,39 +2644,24 @@ Elm.GameModel.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Utils = Elm.Utils.make(_elm);
-   var GameState = function (a) {
-      return function (b) {
-         return function (c) {
-            return function (d) {
-               return function (e) {
-                  return function (f) {
-                     return function (g) {
-                        return function (h) {
-                           return function (i) {
-                              return function (j) {
-                                 return {_: {}
-                                        ,board: a
-                                        ,cursorAt: e
-                                        ,gameProgress: b
-                                        ,gameType: f
-                                        ,inCheck: h
-                                        ,mayhem: i
-                                        ,player: g
-                                        ,seed: j
-                                        ,selected: d
-                                        ,turn: c};
-                              };
-                           };
-                        };
-                     };
-                  };
-               };
-            };
-         };
-      };
-   };
-   var Computer = {ctor: "Computer"};
-   var Human = {ctor: "Human"};
+   var GameState = F8(function (a,
+   b,
+   c,
+   d,
+   e,
+   f,
+   g,
+   h) {
+      return {_: {}
+             ,board: a
+             ,cursorAt: e
+             ,gameProgress: b
+             ,gameType: f
+             ,mayhem: g
+             ,seed: h
+             ,selected: d
+             ,turn: c};
+   });
    var OneVSComputer = {ctor: "OneVSComputer"};
    var OneVSOne = {ctor: "OneVSOne"};
    var BlackWon = {ctor: "BlackWon"};
@@ -2695,22 +2674,16 @@ Elm.GameModel.make = function (_elm) {
                                 ,_1: 4}
                      ,gameProgress: InProgress
                      ,gameType: OneVSOne
-                     ,inCheck: $Maybe.Nothing
                      ,mayhem: false
-                     ,player: Human
                      ,seed: $Maybe.Nothing
                      ,selected: $Maybe.Nothing
                      ,turn: $Piece.White};
-   var Stopped = {ctor: "Stopped"};
    _elm.GameModel.values = {_op: _op
-                           ,Stopped: Stopped
                            ,InProgress: InProgress
                            ,WhiteWon: WhiteWon
                            ,BlackWon: BlackWon
                            ,OneVSOne: OneVSOne
                            ,OneVSComputer: OneVSComputer
-                           ,Human: Human
-                           ,Computer: Computer
                            ,GameState: GameState
                            ,defaultGame: defaultGame};
    return _elm.GameModel.values;
@@ -3637,10 +3610,6 @@ Elm.InputModel.make = function (_elm) {
       return {ctor: "EnterPressed"
              ,_0: a};
    };
-   var CurrentTimestampChanged = function (a) {
-      return {ctor: "CurrentTimestampChanged"
-             ,_0: a};
-   };
    var GameTypeChanged = function (a) {
       return {ctor: "GameTypeChanged"
              ,_0: a};
@@ -3690,7 +3659,6 @@ Elm.InputModel.make = function (_elm) {
                             ,Move: Move
                             ,NewGameButtonPressed: NewGameButtonPressed
                             ,GameTypeChanged: GameTypeChanged
-                            ,CurrentTimestampChanged: CurrentTimestampChanged
                             ,EnterPressed: EnterPressed
                             ,MayhemActivated: MayhemActivated
                             ,Tick: Tick
@@ -4295,7 +4263,7 @@ Elm.Logic.make = function (_elm) {
                       $Basics.abs(difCol));}
                  break;}
             _U.badCase($moduleName,
-            "between lines 65 and 72");
+            "between lines 64 and 71");
          }();
       }();
    });
@@ -4408,7 +4376,7 @@ Elm.Logic.make = function (_elm) {
                     color,
                     $Piece.King));}
                _U.badCase($moduleName,
-               "on line 49, column 60 to 81");
+               "on line 48, column 60 to 81");
             }();
          },
          pieces));
@@ -4430,13 +4398,13 @@ Elm.Logic.make = function (_elm) {
                             ,_0: $Piece.second(king._0)
                             ,_1: $Piece.thrd(king._0)});}
                        _U.badCase($moduleName,
-                       "on line 53, column 71 to 150");
+                       "on line 52, column 71 to 150");
                     }();
                  },
                  otherColorPieces);
                case "Nothing": return false;}
             _U.badCase($moduleName,
-            "between lines 51 and 53");
+            "between lines 50 and 52");
          }();
       }();
    });
@@ -4522,14 +4490,14 @@ Elm.Logic.make = function (_elm) {
                               getTail(pieces),
                               newSeed);}
                          _U.badCase($moduleName,
-                         "between lines 86 and 88");
+                         "between lines 85 and 87");
                       }();
                    }();}
               break;
             case "Nothing":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 81 and 88");
+         "between lines 80 and 87");
       }();
    });
    var loopUntilCanMovePiece = F4(function (board,

@@ -4,8 +4,8 @@ import Utils exposing (..)
 import List exposing (filter, any)
 
 type PieceColor = White | Black
-type PType = Pawn | Knight | Bishop | Rook | Queen | King
-type Piece = Piece PieceColor PType
+type PieceType = Pawn | Knight | Bishop | Rook | Queen | King
+type Piece = Piece PieceColor PieceType
 
 switchColor: PieceColor -> PieceColor
 switchColor color = case color of
@@ -20,7 +20,7 @@ stringToColor c = case c of
                     "White" -> White
                     "Black" -> Black
 
-stringToType: String -> PType
+stringToType: String -> PieceType
 stringToType t = case t of
                     "Rook" -> Rook
                     "Knight" -> Knight
@@ -47,7 +47,7 @@ initialSpecialPiecesFromColor c = List.map2 (\j t -> ((getInitialRowFromColor c 
 initialPawnsFromColor: PieceColor -> List (Position, Piece)
 initialPawnsFromColor c = List.map (\j -> ((getInitialRowFromColor c Pawn, j), Piece c Pawn)) [0..(boardSize - 1)]
 
-getInitialRowFromColor: PieceColor -> PType -> Int
+getInitialRowFromColor: PieceColor -> PieceType -> Int
 getInitialRowFromColor c t = case (c,t) of
                                 (Black, Pawn) -> 1
                                 (White, Pawn) -> 6

@@ -1,4 +1,3 @@
--- Logic.elm
 module GameManager where
 
 import GameModel exposing (..)
@@ -12,11 +11,9 @@ import Logic exposing (inCheck, canMakeMove, canMoveTile, loopUntilCanMovePiece)
 import Random exposing (Seed, initialSeed)
 
 checkValidGame: Input -> GameState -> GameState
-checkValidGame input gameState =  let
-                                    newGameState = checkPreConditions input gameState
-                                  in if gameFinished newGameState
+checkValidGame input gameState =  if gameFinished gameState
                                       then gameState
-                                      else newGameState |> stepGame input |> checkPostCondition
+                                      else (checkPreConditions input gameState) |> stepGame input |> checkPostCondition
 
 checkPreConditions: Input -> GameState -> GameState
 checkPreConditions input gameState =

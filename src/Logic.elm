@@ -7,7 +7,6 @@ import Utils exposing (..)
 
 import Maybe exposing (Maybe, withDefault)
 import Array exposing (Array, toList)
-import Debug
 import Random exposing (Seed)
 import List exposing (filter, any, all, head, drop, take, foldr, tail)
 
