@@ -2322,7 +2322,7 @@ Elm.GameManager.make = function (_elm) {
             case "White":
             return $GameModel.BlackWon;}
          _U.badCase($moduleName,
-         "between lines 103 and 105");
+         "between lines 102 and 104");
       }();
    };
    var switchGameType = function (gameState) {
@@ -2335,7 +2335,7 @@ Elm.GameManager.make = function (_elm) {
                                case "OneVSOne":
                                return $GameModel.OneVSComputer;}
                             _U.badCase($moduleName,
-                            "between lines 82 and 85");
+                            "between lines 81 and 84");
                          }()]],
       gameState);
    };
@@ -2360,7 +2360,7 @@ Elm.GameManager.make = function (_elm) {
                                 ,_1: 4}]],
               gameState);}
          _U.badCase($moduleName,
-         "between lines 62 and 66");
+         "between lines 61 and 65");
       }();
    };
    var makeMove = F4(function (g,
@@ -2385,7 +2385,7 @@ Elm.GameManager.make = function (_elm) {
                                                   case "White":
                                                   return $Piece.Black;}
                                                _U.badCase($moduleName,
-                                               "between lines 116 and 119");
+                                               "between lines 115 and 118");
                                             }()]],
       g));
    });
@@ -2427,13 +2427,13 @@ Elm.GameManager.make = function (_elm) {
                                              ,colorLost(gameState.turn)]],
                             gameState);}
                        _U.badCase($moduleName,
-                       "between lines 98 and 100");
+                       "between lines 97 and 99");
                     }();
                  }();
                case "Nothing":
                return gameState;}
             _U.badCase($moduleName,
-            "between lines 93 and 100");
+            "between lines 92 and 99");
          }();
       }();
    };
@@ -2511,7 +2511,7 @@ Elm.GameManager.make = function (_elm) {
                       break;}
                  break;}
             _U.badCase($moduleName,
-            "between lines 72 and 76");
+            "between lines 71 and 75");
          }();
       }();
    });
