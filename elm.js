@@ -2291,6 +2291,7 @@ Elm.GameManager.make = function (_elm) {
    $moduleName = "GameManager",
    $Basics = Elm.Basics.make(_elm),
    $Board = Elm.Board.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
    $GameModel = Elm.GameModel.make(_elm),
    $InputModel = Elm.InputModel.make(_elm),
    $List = Elm.List.make(_elm),
@@ -2322,7 +2323,7 @@ Elm.GameManager.make = function (_elm) {
             case "White":
             return $GameModel.BlackWon;}
          _U.badCase($moduleName,
-         "between lines 102 and 104");
+         "between lines 104 and 106");
       }();
    };
    var switchGameType = function (gameState) {
@@ -2335,7 +2336,7 @@ Elm.GameManager.make = function (_elm) {
                                case "OneVSOne":
                                return $GameModel.OneVSComputer;}
                             _U.badCase($moduleName,
-                            "between lines 81 and 84");
+                            "between lines 85 and 88");
                          }()]],
       gameState);
    };
@@ -2360,102 +2361,127 @@ Elm.GameManager.make = function (_elm) {
                                 ,_1: 4}]],
               gameState);}
          _U.badCase($moduleName,
-         "between lines 61 and 65");
+         "between lines 65 and 69");
       }();
    };
    var makeMove = F4(function (g,
    tile,
    from,
    to) {
-      return moveCursorToOrigin(_U.replace([["board"
-                                            ,A3($Board.promotePossiblePawns,
-                                            A3($Board.makeMove,
-                                            g.board,
-                                            from,
-                                            to),
-                                            tile,
-                                            to)]
-                                           ,["selected",$Maybe.Nothing]
-                                           ,["turn"
-                                            ,function () {
-                                               var _v3 = g.turn;
-                                               switch (_v3.ctor)
-                                               {case "Black":
-                                                  return $Piece.White;
-                                                  case "White":
-                                                  return $Piece.Black;}
-                                               _U.badCase($moduleName,
-                                               "between lines 115 and 118");
-                                            }()]],
-      g));
+      return function () {
+         var board = A3($Board.promotePossiblePawns,
+         A3($Board.makeMove,
+         g.board,
+         from,
+         to),
+         tile,
+         to);
+         var player = g.turn;
+         return moveCursorToOrigin(_U.replace([["board"
+                                               ,board]
+                                              ,["selected",$Maybe.Nothing]
+                                              ,["turn"
+                                               ,function () {
+                                                  var _v3 = g.turn;
+                                                  switch (_v3.ctor)
+                                                  {case "Black":
+                                                     return $Piece.White;
+                                                     case "White":
+                                                     return $Piece.Black;}
+                                                  _U.badCase($moduleName,
+                                                  "between lines 131 and 134");
+                                               }()]],
+         g));
+      }();
    });
    var makeRandomMove = function (gameState) {
       return function () {
-         var pieces = A2($Board.getPiecesForColor,
-         gameState.board,
-         gameState.turn);
-         return function () {
-            var _v4 = gameState.seed;
-            switch (_v4.ctor)
-            {case "Just":
-               return function () {
-                    var maybeMovement = A4($Logic.loopUntilCanMovePiece,
-                    gameState.board,
-                    gameState.turn,
-                    _v4._0,
-                    pieces);
-                    return function () {
-                       switch (maybeMovement.ctor)
-                       {case "Just":
-                          switch (maybeMovement._0.ctor)
-                            {case "_Tuple3":
-                               return function () {
-                                    var newGameState = A4(makeMove,
-                                    gameState,
-                                    A2($Board.readTile,
-                                    maybeMovement._0._0,
-                                    gameState.board),
-                                    maybeMovement._0._0,
-                                    maybeMovement._0._1);
-                                    return _U.replace([["seed"
-                                                       ,$Maybe.Just(maybeMovement._0._2)]],
-                                    newGameState);
-                                 }();}
-                            break;
-                          case "Nothing":
-                          return _U.replace([["gameProgress"
-                                             ,colorLost(gameState.turn)]],
-                            gameState);}
-                       _U.badCase($moduleName,
-                       "between lines 97 and 99");
-                    }();
+         var _v4 = gameState.seed;
+         switch (_v4.ctor)
+         {case "Just":
+            return function () {
+                 var maybeMovement = A3($Logic.loopUntilCanMovePiece,
+                 gameState.board,
+                 gameState.turn,
+                 _v4._0);
+                 return function () {
+                    switch (maybeMovement.ctor)
+                    {case "Just":
+                       switch (maybeMovement._0.ctor)
+                         {case "_Tuple3":
+                            return function () {
+                                 var newGameState = A4(makeMove,
+                                 gameState,
+                                 A2($Board.readTile,
+                                 maybeMovement._0._0,
+                                 gameState.board),
+                                 maybeMovement._0._0,
+                                 maybeMovement._0._1);
+                                 return _U.replace([["seed"
+                                                    ,$Maybe.Just(maybeMovement._0._2)]],
+                                 newGameState);
+                              }();}
+                         break;
+                       case "Nothing":
+                       return _U.replace([["gameProgress"
+                                          ,colorLost(gameState.turn)]],
+                         gameState);}
+                    _U.badCase($moduleName,
+                    "between lines 99 and 101");
                  }();
-               case "Nothing":
-               return gameState;}
-            _U.badCase($moduleName,
-            "between lines 92 and 99");
-         }();
+              }();
+            case "Nothing":
+            return gameState;}
+         _U.badCase($moduleName,
+         "between lines 94 and 101");
       }();
    };
    var simulateComputerPlayer = F2(function (input,
    gameState) {
       return makeRandomMove(gameState);
    });
-   var attemptMove = F5(function (g,
-   t,
+   var attemptMove = F5(function (gameState,
+   tile,
    from,
    to,
    f) {
-      return A5($Logic.canMoveTile,
-      g.board,
-      g.turn,
-      t,
-      from,
-      to) ? f(A4(makeMove,
-      g,
-      t,
-      from,
-      to)) : f(g);
+      return function () {
+         var _v11 = gameState.seed;
+         switch (_v11.ctor)
+         {case "Just":
+            return function () {
+                 var possibleMovement = A3($Logic.loopUntilCanMovePiece,
+                 gameState.board,
+                 gameState.turn,
+                 _v11._0);
+                 return function () {
+                    switch (possibleMovement.ctor)
+                    {case "Just":
+                       return A5($Logic.canMoveTile,
+                         gameState.board,
+                         gameState.turn,
+                         tile,
+                         from,
+                         to) ? f(A4(makeMove,
+                         gameState,
+                         tile,
+                         from,
+                         to)) : f(gameState);
+                       case "Nothing":
+                       return _U.replace([["gameProgress"
+                                          ,A2($Debug.log,
+                                          "lost",
+                                          colorLost(gameState.turn))]],
+                         gameState);}
+                    _U.badCase($moduleName,
+                    "between lines 117 and 121");
+                 }();
+              }();
+            case "Nothing":
+            return gameState;}
+         _U.badCase($moduleName,
+         "between lines 111 and 121");
+      }();
    });
    var playerMakingMove = F2(function (input,
    gameState) {
@@ -2465,21 +2491,21 @@ Elm.GameManager.make = function (_elm) {
          gameState.board);
          var selected = gameState.selected;
          return function () {
-            var _v11 = {ctor: "_Tuple2"
+            var _v15 = {ctor: "_Tuple2"
                        ,_0: selected
                        ,_1: tileAt};
-            switch (_v11.ctor)
+            switch (_v15.ctor)
             {case "_Tuple2":
-               switch (_v11._0.ctor)
+               switch (_v15._0.ctor)
                  {case "Just":
-                    switch (_v11._1.ctor)
+                    switch (_v15._1.ctor)
                       {case "Just":
                          return A5(attemptMove,
                            gameState,
                            A2($Board.readTile,
-                           _v11._0._0,
+                           _v15._0._0,
                            gameState.board),
-                           _v11._0._0,
+                           _v15._0._0,
                            gameState.cursorAt,
                            function (gamestate) {
                               return _U.replace([["selected"
@@ -2490,9 +2516,9 @@ Elm.GameManager.make = function (_elm) {
                          return A5(attemptMove,
                            gameState,
                            A2($Board.readTile,
-                           _v11._0._0,
+                           _v15._0._0,
                            gameState.board),
-                           _v11._0._0,
+                           _v15._0._0,
                            gameState.cursorAt,
                            function (gamestate) {
                               return _U.replace([["selected"
@@ -2501,7 +2527,7 @@ Elm.GameManager.make = function (_elm) {
                            });}
                       break;
                     case "Nothing":
-                    switch (_v11._1.ctor)
+                    switch (_v15._1.ctor)
                       {case "Just":
                          return _U.replace([["selected"
                                             ,$Maybe.Just(gameState.cursorAt)]],
@@ -2511,14 +2537,30 @@ Elm.GameManager.make = function (_elm) {
                       break;}
                  break;}
             _U.badCase($moduleName,
-            "between lines 71 and 75");
+            "between lines 75 and 79");
          }();
       }();
    });
    var gameFinished = function (gameState) {
-      return _U.eq(gameState.gameProgress,
-      $GameModel.WhiteWon) || _U.eq(gameState.gameProgress,
-      $GameModel.BlackWon);
+      return function () {
+         var _v21 = gameState.seed;
+         switch (_v21.ctor)
+         {case "Just":
+            return function () {
+                 var maybePiece = A3($Logic.loopUntilCanMovePiece,
+                 gameState.board,
+                 gameState.turn,
+                 _v21._0);
+                 return function () {
+                    switch (maybePiece.ctor)
+                    {case "Nothing": return true;}
+                    return false;
+                 }();
+              }();
+            case "Nothing": return false;}
+         _U.badCase($moduleName,
+         "between lines 54 and 62");
+      }();
    };
    var switchMayhem = function (g) {
       return function () {
@@ -2529,18 +2571,7 @@ Elm.GameManager.make = function (_elm) {
       }();
    };
    var checkPostCondition = function (gameState) {
-      return _U.eq(gameState.gameType,
-      $GameModel.OneVSOne) && $Basics.not(gameState.mayhem) ? _U.eq(gameState.turn,
-      $Piece.Black) && A2($Logic.inCheck,
-      gameState.board,
-      $Piece.Black) ? _U.replace([["gameProgress"
-                                  ,colorLost($Piece.Black)]],
-      gameState) : _U.eq(gameState.turn,
-      $Piece.White) && A2($Logic.inCheck,
-      gameState.board,
-      $Piece.White) ? _U.replace([["gameProgress"
-                                  ,colorLost($Piece.White)]],
-      gameState) : gameState : gameState;
+      return gameState;
    };
    var stepGame = F2(function (input,
    gameState) {
@@ -2551,10 +2582,10 @@ Elm.GameManager.make = function (_elm) {
       $Piece.Black) ? A2(simulateComputerPlayer,
       input,
       gameState) : function () {
-         var _v17 = input.action;
-         switch (_v17.ctor)
+         var _v24 = input.action;
+         switch (_v24.ctor)
          {case "EnterPressed":
-            switch (_v17._0)
+            switch (_v24._0)
               {case true:
                  return A2(playerMakingMove,
                    input,
@@ -2563,7 +2594,7 @@ Elm.GameManager.make = function (_elm) {
             case "Move":
             return A2(moveCursor,
               gameState,
-              _v17._0);}
+              _v24._0);}
          return gameState;
       }();
    });
@@ -2574,20 +2605,20 @@ Elm.GameManager.make = function (_elm) {
                                         ,$Maybe.Just($Random.initialSeed(input.currentTimestamp))]],
          gameState);
          return function () {
-            var _v20 = input.action;
-            switch (_v20.ctor)
+            var _v27 = input.action;
+            switch (_v27.ctor)
             {case "GameTypeChanged":
-               switch (_v20._0)
+               switch (_v27._0)
                  {case true:
                     return switchGameType(newGameState);}
                  break;
                case "MayhemActivated":
-               switch (_v20._0)
+               switch (_v27._0)
                  {case true:
                     return switchMayhem(newGameState);}
                  break;
                case "NewGameButtonPressed":
-               switch (_v20._0)
+               switch (_v27._0)
                  {case true: return function () {
                          var initialGame = startingGame(input);
                          return _U.replace([["gameType"
@@ -2601,7 +2632,9 @@ Elm.GameManager.make = function (_elm) {
    });
    var checkValidGame = F2(function (input,
    gameState) {
-      return gameFinished(gameState) ? gameState : checkPostCondition(stepGame(input)(A2(checkPreConditions,
+      return gameFinished(gameState) ? _U.replace([["gameProgress"
+                                                   ,colorLost(gameState.turn)]],
+      gameState) : checkPostCondition(stepGame(input)(A2(checkPreConditions,
       input,
       gameState)));
    });
@@ -4263,7 +4296,7 @@ Elm.Logic.make = function (_elm) {
                       $Basics.abs(difCol));}
                  break;}
             _U.badCase($moduleName,
-            "between lines 64 and 71");
+            "between lines 69 and 76");
          }();
       }();
    });
@@ -4414,6 +4447,12 @@ Elm.Logic.make = function (_elm) {
       board,
       color));
    });
+   var colorInCheck = F2(function (board,
+   color) {
+      return A2(inCheck,
+      board,
+      color) ? $Maybe.Just(color) : $Maybe.Nothing;
+   });
    var canMakeMove = F5(function (board,
    color,
    piece,
@@ -4490,21 +4529,23 @@ Elm.Logic.make = function (_elm) {
                               getTail(pieces),
                               newSeed);}
                          _U.badCase($moduleName,
-                         "between lines 85 and 87");
+                         "between lines 91 and 93");
                       }();
                    }();}
               break;
             case "Nothing":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 80 and 87");
+         "between lines 86 and 93");
       }();
    });
-   var loopUntilCanMovePiece = F4(function (board,
+   var loopUntilCanMovePiece = F3(function (board,
    color,
-   seed,
-   pieces) {
+   seed) {
       return function () {
+         var pieces = A2($Board.getPiecesForColor,
+         board,
+         color);
          var $ = A2($Utils.shuffle,
          pieces,
          seed),
@@ -4541,6 +4582,7 @@ Elm.Logic.make = function (_elm) {
                        ,notOtherPieceInPath: notOtherPieceInPath
                        ,notInCheck: notInCheck
                        ,inCheck: inCheck
+                       ,colorInCheck: colorInCheck
                        ,canAttack: canAttack
                        ,moveIsValid: moveIsValid
                        ,loopUntilCanMovePiece: loopUntilCanMovePiece

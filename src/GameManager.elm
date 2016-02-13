@@ -6,19 +6,21 @@ import Utils exposing (..)
 import Piece exposing (PieceColor)
 import Tile exposing (Tile)
 import Board exposing (Board, readTile, getPiecesForColor, promotePossiblePawns)
-import Logic exposing (inCheck, canMakeMove, canMoveTile, loopUntilCanMovePiece)
+import Logic exposing (inCheck, canMakeMove, canMoveTile, loopUntilCanMovePiece, colorInCheck)
 
+import Debug
 import Random exposing (Seed, initialSeed)
 
 checkValidGame: Input -> GameState -> GameState
 checkValidGame input gameState =  if gameFinished gameState
-                                      then gameState
+                                      then { gameState | gameProgress <- colorLost gameState.turn }
                                       else (checkPreConditions input gameState) |> stepGame input |> checkPostCondition
 
 checkPreConditions: Input -> GameState -> GameState
 checkPreConditions input gameState =
                               let
-                                newGameState = { gameState | seed <- Just (initialSeed input.currentTimestamp) }
+                                newGameState = { gameState | seed <- Just (initialSeed input.currentTimestamp)
+                                                }
                               in
                                 case input.action of
                                 MayhemActivated True -> switchMayhem newGameState
@@ -43,19 +45,21 @@ stepGame input gameState =  if
 
 --Color is already switched
 checkPostCondition: GameState -> GameState
-checkPostCondition gameState = if gameState.gameType == OneVSOne && not (gameState.mayhem)
-                                  then if | gameState.turn == Piece.Black && inCheck gameState.board Piece.Black
-                                        -> { gameState | gameProgress <- colorLost Piece.Black }
-                                        | gameState.turn == Piece.White && inCheck gameState.board Piece.White
-                                        -> { gameState | gameProgress <- colorLost Piece.White }
-                                        | otherwise -> gameState
-                               else  gameState
+checkPostCondition gameState = gameState
 
 switchMayhem: GameState -> GameState
 switchMayhem g = let x = not g.mayhem in { g | mayhem <- x }
 
 gameFinished: GameState -> Bool
-gameFinished gameState = gameState.gameProgress == WhiteWon || gameState.gameProgress == BlackWon
+gameFinished gameState = case gameState.seed of
+                          Nothing -> False
+                          Just seed ->
+                                      let
+                                        maybePiece = loopUntilCanMovePiece gameState.board gameState.turn seed
+                                      in
+                                        case maybePiece of
+                                          Nothing -> True
+                                          otherwise -> False
 
 moveCursorToOrigin: GameState -> GameState
 moveCursorToOrigin gameState = case gameState.turn of
@@ -87,13 +91,11 @@ simulateComputerPlayer: Input -> GameState -> GameState
 simulateComputerPlayer input gameState = makeRandomMove gameState
 
 makeRandomMove: GameState -> GameState
-makeRandomMove gameState = let
-                              pieces = getPiecesForColor gameState.board gameState.turn
-                            in case gameState.seed of
+makeRandomMove gameState = case gameState.seed of
                               Nothing -> gameState
                               Just seed ->
                                 let
-                                  maybeMovement = loopUntilCanMovePiece gameState.board gameState.turn seed pieces
+                                  maybeMovement = loopUntilCanMovePiece gameState.board gameState.turn seed
                                 in case maybeMovement of
                                   Nothing -> { gameState | gameProgress <- colorLost gameState.turn }
                                   Just (from, to, newSeed) -> let newGameState = makeMove gameState (readTile from gameState.board) from to in { newGameState | seed <- Just (newSeed) }
@@ -105,17 +107,31 @@ colorLost color = case color of
 
 
 attemptMove: GameState -> Tile -> Position -> Position -> (GameState -> GameState) -> GameState
-attemptMove g t from to f = if canMoveTile g.board g.turn t from to
-                          then f (makeMove g t from to)
-                          else f g
+attemptMove gameState tile from to f =
+                            case gameState.seed of
+                              Nothing -> gameState
+                              Just seed ->
+                                let
+                                  possibleMovement = loopUntilCanMovePiece gameState.board gameState.turn seed
+                                in
+                                  case possibleMovement of
+                                    Nothing -> { gameState | gameProgress <- Debug.log "lost" (colorLost gameState.turn) }
+                                    Just (possible) -> if canMoveTile gameState.board gameState.turn tile from to
+                                                        then f (makeMove gameState tile from to)
+                                                        else f gameState
 
 makeMove: GameState -> Tile -> Position -> Position -> GameState
-makeMove g tile from to =  moveCursorToOrigin { g | board <- promotePossiblePawns (Board.makeMove g.board from to) tile to,
-                          selected <- Nothing,
-                          turn <- case g.turn of
+makeMove g tile from to = let
+                            player = g.turn
+                            board = promotePossiblePawns (Board.makeMove g.board from to) tile to
+                          in
+                          moveCursorToOrigin {
+                            g | board <- board,
+                            selected <- Nothing,
+                            turn <- case g.turn of
                                   Piece.White -> Piece.Black
                                   Piece.Black -> Piece.White
-                        }
+                          }
 
 moveCursor: GameState -> Direction -> GameState
 moveCursor gameState direction =

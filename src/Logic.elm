@@ -51,6 +51,11 @@ inCheck board color = let
                           Nothing -> False -- Should not enter here, but king is Maybe.
                           Just kingPosition -> any (\(piece, x, y) -> pieceCanReachPosition board piece (x,y) (second kingPosition, thrd kingPosition)) otherColorPieces
 
+colorInCheck: Board -> PieceColor -> Maybe PieceColor
+colorInCheck board color = if inCheck board color
+                              then Just(color)
+                              else Nothing
+
 canAttack: Board -> Piece -> Position -> Position -> Bool
 canAttack board piece from to = case piece of
                             Piece White Pawn -> whitePawnCanAttack from to board
@@ -70,8 +75,9 @@ moveIsValid board piece from to = let
                               Piece Black Pawn -> canMoveBlackPawn board from to
                               Piece _ King -> canMoveKing (abs difRow) (abs difCol)
 
-loopUntilCanMovePiece: Board -> PieceColor -> Seed -> List(Piece, Int, Int) -> Maybe(Position, Position, Seed)
-loopUntilCanMovePiece board color seed pieces = let
+loopUntilCanMovePiece: Board -> PieceColor -> Seed -> Maybe(Position, Position, Seed)
+loopUntilCanMovePiece board color seed = let
+                                                  pieces = getPiecesForColor board color
                                                   (shuffledPieces, newSeed) = shuffle pieces seed
                                                 in
                                                   evaluatePossibleMovement board color shuffledPieces newSeed
