@@ -32,3 +32,5 @@ run.sh: Compiles & run chess
 ## Report
 
 There is a written report of the game on the [docs folder](https://github.com/FranDepascuali/FunctionalChess/tree/master/docs)
+
+I was heavily inspired by [this](http://scrambledeggsontoast.github.io/2014/05/09/writing-2048-elm/) elm2048) implementation.
