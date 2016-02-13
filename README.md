@@ -1,4 +1,4 @@
-Functional Chess
+Functional Chess!
 ----------------
 
 ![chess](https://cloud.githubusercontent.com/assets/12101394/12738417/549e5234-c93f-11e5-8b93-1092ff7e5b62.gif)
@@ -29,8 +29,14 @@ make.sh: Compiles chess
 run.sh: Compiles & run chess
 ```
 
+## Screenshots
+
+<img width="633" alt="screen shot 2016-02-13 at 00 48 13" src="https://cloud.githubusercontent.com/assets/12101394/13025673/fdf64b7a-d1eb-11e5-9fc6-cc6d4b6bec2f.png">
+<img width="634" alt="screen shot 2016-02-13 at 00 43 52" src="https://cloud.githubusercontent.com/assets/12101394/13025674/03443344-d1ec-11e5-9b37-34ee33553a4b.png">
+<img width="634" alt="screen shot 2016-02-13 at 00 43 37" src="https://cloud.githubusercontent.com/assets/12101394/13025676/05e7ae3c-d1ec-11e5-8f93-ddab904561f9.png">
+
 ## Report
 
-There is a written report of the game on the [docs folder](https://github.com/FranDepascuali/FunctionalChess/tree/master/docs)
+There is a written report(spanish) of the game on the [docs folder](https://github.com/FranDepascuali/FunctionalChess/tree/master/docs)
 
-I was heavily inspired by [this](http://scrambledeggsontoast.github.io/2014/05/09/writing-2048-elm/) elm2048) implementation.
+I was heavily inspired by [this](http://scrambledeggsontoast.github.io/2014/05/09/writing-2048-elm/) elm2048 implementation.
