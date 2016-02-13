@@ -6,7 +6,7 @@ import Utils exposing (..)
 import Piece exposing (PieceColor)
 import Tile exposing (Tile)
 import Board exposing (Board, readTile, getPiecesForColor, promotePossiblePawns)
-import Logic exposing (inCheck, canMakeMove, canMoveTile, loopUntilCanMovePiece, colorInCheck)
+import Logic exposing (inCheck, canMakeMove, canMoveTile, loopUntilCanMovePiece)
 
 import Debug
 import Random exposing (Seed, initialSeed)

@@ -51,11 +51,6 @@ inCheck board color = let
                           Nothing -> False -- Should not enter here, but king is Maybe.
                           Just kingPosition -> any (\(piece, x, y) -> pieceCanReachPosition board piece (x,y) (second kingPosition, thrd kingPosition)) otherColorPieces
 
-colorInCheck: Board -> PieceColor -> Maybe PieceColor
-colorInCheck board color = if inCheck board color
-                              then Just(color)
-                              else Nothing
-
 canAttack: Board -> Piece -> Position -> Position -> Bool
 canAttack board piece from to = case piece of
                             Piece White Pawn -> whitePawnCanAttack from to board
