@@ -5,7 +5,7 @@ import Piece exposing (PieceColor)
 import Board exposing (Board, startBoard)
 import Random exposing (Seed)
 
-type Progress = InProgress | WhiteWon | BlackWon
+type Progress = InProgress | WhiteWon | BlackWon | Draw
 type alias PlayerColor = PieceColor
 type GameType = OneVSOne | OneVSComputer
 

@@ -123,5 +123,6 @@ display: GameState -> Element -- display a gamestate
 display gameState = displayGrid gameState
                     |> case gameState.gameProgress of
                         WhiteWon -> applyOverlay (displayWonOverlay "White wins!")
-                        BlackWon-> applyOverlay (displayWonOverlay "Black wins")
+                        BlackWon -> applyOverlay (displayWonOverlay "Black wins!")
+                        Draw -> applyOverlay (displayWonOverlay "Draw!")
                         otherwise -> identity

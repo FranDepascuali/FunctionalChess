@@ -2291,7 +2291,6 @@ Elm.GameManager.make = function (_elm) {
    $moduleName = "GameManager",
    $Basics = Elm.Basics.make(_elm),
    $Board = Elm.Board.make(_elm),
-   $Debug = Elm.Debug.make(_elm),
    $GameModel = Elm.GameModel.make(_elm),
    $InputModel = Elm.InputModel.make(_elm),
    $List = Elm.List.make(_elm),
@@ -2323,7 +2322,7 @@ Elm.GameManager.make = function (_elm) {
             case "White":
             return $GameModel.BlackWon;}
          _U.badCase($moduleName,
-         "between lines 104 and 106");
+         "between lines 109 and 111");
       }();
    };
    var switchGameType = function (gameState) {
@@ -2336,7 +2335,7 @@ Elm.GameManager.make = function (_elm) {
                                case "OneVSOne":
                                return $GameModel.OneVSComputer;}
                             _U.badCase($moduleName,
-                            "between lines 85 and 88");
+                            "between lines 90 and 93");
                          }()]],
       gameState);
    };
@@ -2361,38 +2360,34 @@ Elm.GameManager.make = function (_elm) {
                                 ,_1: 4}]],
               gameState);}
          _U.badCase($moduleName,
-         "between lines 65 and 69");
+         "between lines 70 and 74");
       }();
    };
-   var makeMove = F4(function (g,
+   var makeMove = F4(function (gameState,
    tile,
    from,
    to) {
-      return function () {
-         var board = A3($Board.promotePossiblePawns,
-         A3($Board.makeMove,
-         g.board,
-         from,
-         to),
-         tile,
-         to);
-         var player = g.turn;
-         return moveCursorToOrigin(_U.replace([["board"
-                                               ,board]
-                                              ,["selected",$Maybe.Nothing]
-                                              ,["turn"
-                                               ,function () {
-                                                  var _v3 = g.turn;
-                                                  switch (_v3.ctor)
-                                                  {case "Black":
-                                                     return $Piece.White;
-                                                     case "White":
-                                                     return $Piece.Black;}
-                                                  _U.badCase($moduleName,
-                                                  "between lines 131 and 134");
-                                               }()]],
-         g));
-      }();
+      return moveCursorToOrigin(_U.replace([["board"
+                                            ,A3($Board.promotePossiblePawns,
+                                            A3($Board.makeMove,
+                                            gameState.board,
+                                            from,
+                                            to),
+                                            tile,
+                                            to)]
+                                           ,["selected",$Maybe.Nothing]
+                                           ,["turn"
+                                            ,function () {
+                                               var _v3 = gameState.turn;
+                                               switch (_v3.ctor)
+                                               {case "Black":
+                                                  return $Piece.White;
+                                                  case "White":
+                                                  return $Piece.Black;}
+                                               _U.badCase($moduleName,
+                                               "between lines 136 and 139");
+                                            }()]],
+      gameState));
    });
    var makeRandomMove = function (gameState) {
       return function () {
@@ -2427,13 +2422,13 @@ Elm.GameManager.make = function (_elm) {
                                           ,colorLost(gameState.turn)]],
                          gameState);}
                     _U.badCase($moduleName,
-                    "between lines 99 and 101");
+                    "between lines 104 and 106");
                  }();
               }();
             case "Nothing":
             return gameState;}
          _U.badCase($moduleName,
-         "between lines 94 and 101");
+         "between lines 99 and 106");
       }();
    };
    var simulateComputerPlayer = F2(function (input,
@@ -2445,43 +2440,16 @@ Elm.GameManager.make = function (_elm) {
    from,
    to,
    f) {
-      return function () {
-         var _v11 = gameState.seed;
-         switch (_v11.ctor)
-         {case "Just":
-            return function () {
-                 var possibleMovement = A3($Logic.loopUntilCanMovePiece,
-                 gameState.board,
-                 gameState.turn,
-                 _v11._0);
-                 return function () {
-                    switch (possibleMovement.ctor)
-                    {case "Just":
-                       return A5($Logic.canMoveTile,
-                         gameState.board,
-                         gameState.turn,
-                         tile,
-                         from,
-                         to) ? f(A4(makeMove,
-                         gameState,
-                         tile,
-                         from,
-                         to)) : f(gameState);
-                       case "Nothing":
-                       return _U.replace([["gameProgress"
-                                          ,A2($Debug.log,
-                                          "lost",
-                                          colorLost(gameState.turn))]],
-                         gameState);}
-                    _U.badCase($moduleName,
-                    "between lines 117 and 121");
-                 }();
-              }();
-            case "Nothing":
-            return gameState;}
-         _U.badCase($moduleName,
-         "between lines 111 and 121");
-      }();
+      return A5($Logic.canMoveTile,
+      gameState.board,
+      gameState.turn,
+      tile,
+      from,
+      to) ? f(A4(makeMove,
+      gameState,
+      tile,
+      from,
+      to)) : f(gameState);
    });
    var playerMakingMove = F2(function (input,
    gameState) {
@@ -2491,21 +2459,21 @@ Elm.GameManager.make = function (_elm) {
          gameState.board);
          var selected = gameState.selected;
          return function () {
-            var _v15 = {ctor: "_Tuple2"
+            var _v11 = {ctor: "_Tuple2"
                        ,_0: selected
                        ,_1: tileAt};
-            switch (_v15.ctor)
+            switch (_v11.ctor)
             {case "_Tuple2":
-               switch (_v15._0.ctor)
+               switch (_v11._0.ctor)
                  {case "Just":
-                    switch (_v15._1.ctor)
+                    switch (_v11._1.ctor)
                       {case "Just":
                          return A5(attemptMove,
                            gameState,
                            A2($Board.readTile,
-                           _v15._0._0,
+                           _v11._0._0,
                            gameState.board),
-                           _v15._0._0,
+                           _v11._0._0,
                            gameState.cursorAt,
                            function (gamestate) {
                               return _U.replace([["selected"
@@ -2516,9 +2484,9 @@ Elm.GameManager.make = function (_elm) {
                          return A5(attemptMove,
                            gameState,
                            A2($Board.readTile,
-                           _v15._0._0,
+                           _v11._0._0,
                            gameState.board),
-                           _v15._0._0,
+                           _v11._0._0,
                            gameState.cursorAt,
                            function (gamestate) {
                               return _U.replace([["selected"
@@ -2527,7 +2495,7 @@ Elm.GameManager.make = function (_elm) {
                            });}
                       break;
                     case "Nothing":
-                    switch (_v15._1.ctor)
+                    switch (_v11._1.ctor)
                       {case "Just":
                          return _U.replace([["selected"
                                             ,$Maybe.Just(gameState.cursorAt)]],
@@ -2537,29 +2505,41 @@ Elm.GameManager.make = function (_elm) {
                       break;}
                  break;}
             _U.badCase($moduleName,
-            "between lines 75 and 79");
+            "between lines 80 and 84");
          }();
       }();
    });
    var gameFinished = function (gameState) {
+      return !_U.eq(gameState.gameProgress,
+      $GameModel.InProgress);
+   };
+   var updateGameProgress = function (gameState) {
       return function () {
-         var _v21 = gameState.seed;
-         switch (_v21.ctor)
+         var _v17 = gameState.seed;
+         switch (_v17.ctor)
          {case "Just":
             return function () {
                  var maybePiece = A3($Logic.loopUntilCanMovePiece,
                  gameState.board,
                  gameState.turn,
-                 _v21._0);
+                 _v17._0);
                  return function () {
                     switch (maybePiece.ctor)
-                    {case "Nothing": return true;}
-                    return false;
+                    {case "Nothing":
+                       return A2($Logic.notInCheck,
+                         gameState.board,
+                         gameState.turn) ? _U.replace([["gameProgress"
+                                                       ,$GameModel.Draw]],
+                         gameState) : _U.replace([["gameProgress"
+                                                  ,colorLost(gameState.turn)]],
+                         gameState);}
+                    return gameState;
                  }();
               }();
-            case "Nothing": return false;}
+            case "Nothing":
+            return gameState;}
          _U.badCase($moduleName,
-         "between lines 54 and 62");
+         "between lines 55 and 64");
       }();
    };
    var switchMayhem = function (g) {
@@ -2582,10 +2562,10 @@ Elm.GameManager.make = function (_elm) {
       $Piece.Black) ? A2(simulateComputerPlayer,
       input,
       gameState) : function () {
-         var _v24 = input.action;
-         switch (_v24.ctor)
+         var _v20 = input.action;
+         switch (_v20.ctor)
          {case "EnterPressed":
-            switch (_v24._0)
+            switch (_v20._0)
               {case true:
                  return A2(playerMakingMove,
                    input,
@@ -2594,7 +2574,7 @@ Elm.GameManager.make = function (_elm) {
             case "Move":
             return A2(moveCursor,
               gameState,
-              _v24._0);}
+              _v20._0);}
          return gameState;
       }();
    });
@@ -2605,20 +2585,20 @@ Elm.GameManager.make = function (_elm) {
                                         ,$Maybe.Just($Random.initialSeed(input.currentTimestamp))]],
          gameState);
          return function () {
-            var _v27 = input.action;
-            switch (_v27.ctor)
+            var _v23 = input.action;
+            switch (_v23.ctor)
             {case "GameTypeChanged":
-               switch (_v27._0)
+               switch (_v23._0)
                  {case true:
                     return switchGameType(newGameState);}
                  break;
                case "MayhemActivated":
-               switch (_v27._0)
+               switch (_v23._0)
                  {case true:
                     return switchMayhem(newGameState);}
                  break;
                case "NewGameButtonPressed":
-               switch (_v27._0)
+               switch (_v23._0)
                  {case true: return function () {
                          var initialGame = startingGame(input);
                          return _U.replace([["gameType"
@@ -2632,11 +2612,10 @@ Elm.GameManager.make = function (_elm) {
    });
    var checkValidGame = F2(function (input,
    gameState) {
-      return gameFinished(gameState) ? _U.replace([["gameProgress"
-                                                   ,colorLost(gameState.turn)]],
-      gameState) : checkPostCondition(stepGame(input)(A2(checkPreConditions,
-      input,
-      gameState)));
+      return function () {
+         var newGameState = updateGameProgress(checkPreConditions(input)(gameState));
+         return gameFinished(newGameState) ? newGameState : checkPostCondition(stepGame(input)(newGameState));
+      }();
    });
    _elm.GameManager.values = {_op: _op
                              ,checkValidGame: checkValidGame
@@ -2644,6 +2623,7 @@ Elm.GameManager.make = function (_elm) {
                              ,stepGame: stepGame
                              ,checkPostCondition: checkPostCondition
                              ,switchMayhem: switchMayhem
+                             ,updateGameProgress: updateGameProgress
                              ,gameFinished: gameFinished
                              ,moveCursorToOrigin: moveCursorToOrigin
                              ,playerMakingMove: playerMakingMove
@@ -2697,6 +2677,7 @@ Elm.GameModel.make = function (_elm) {
    });
    var OneVSComputer = {ctor: "OneVSComputer"};
    var OneVSOne = {ctor: "OneVSOne"};
+   var Draw = {ctor: "Draw"};
    var BlackWon = {ctor: "BlackWon"};
    var WhiteWon = {ctor: "WhiteWon"};
    var InProgress = {ctor: "InProgress"};
@@ -2715,6 +2696,7 @@ Elm.GameModel.make = function (_elm) {
                            ,InProgress: InProgress
                            ,WhiteWon: WhiteWon
                            ,BlackWon: BlackWon
+                           ,Draw: Draw
                            ,OneVSOne: OneVSOne
                            ,OneVSComputer: OneVSComputer
                            ,GameState: GameState
@@ -4296,7 +4278,7 @@ Elm.Logic.make = function (_elm) {
                       $Basics.abs(difCol));}
                  break;}
             _U.badCase($moduleName,
-            "between lines 69 and 76");
+            "between lines 64 and 71");
          }();
       }();
    });
@@ -4447,12 +4429,6 @@ Elm.Logic.make = function (_elm) {
       board,
       color));
    });
-   var colorInCheck = F2(function (board,
-   color) {
-      return A2(inCheck,
-      board,
-      color) ? $Maybe.Just(color) : $Maybe.Nothing;
-   });
    var canMakeMove = F5(function (board,
    color,
    piece,
@@ -4529,14 +4505,14 @@ Elm.Logic.make = function (_elm) {
                               getTail(pieces),
                               newSeed);}
                          _U.badCase($moduleName,
-                         "between lines 91 and 93");
+                         "between lines 86 and 88");
                       }();
                    }();}
               break;
             case "Nothing":
             return $Maybe.Nothing;}
          _U.badCase($moduleName,
-         "between lines 86 and 93");
+         "between lines 81 and 88");
       }();
    });
    var loopUntilCanMovePiece = F3(function (board,
@@ -4582,7 +4558,6 @@ Elm.Logic.make = function (_elm) {
                        ,notOtherPieceInPath: notOtherPieceInPath
                        ,notInCheck: notInCheck
                        ,inCheck: inCheck
-                       ,colorInCheck: colorInCheck
                        ,canAttack: canAttack
                        ,moveIsValid: moveIsValid
                        ,loopUntilCanMovePiece: loopUntilCanMovePiece
@@ -11549,7 +11524,9 @@ Elm.Rendering.make = function (_elm) {
          var _v18 = gameState.gameProgress;
          switch (_v18.ctor)
          {case "BlackWon":
-            return applyOverlay(displayWonOverlay("Black wins"));
+            return applyOverlay(displayWonOverlay("Black wins!"));
+            case "Draw":
+            return applyOverlay(displayWonOverlay("Draw!"));
             case "WhiteWon":
             return applyOverlay(displayWonOverlay("White wins!"));}
          return $Basics.identity;

@@ -6,15 +6,16 @@ import Utils exposing (..)
 import Piece exposing (PieceColor)
 import Tile exposing (Tile)
 import Board exposing (Board, readTile, getPiecesForColor, promotePossiblePawns)
-import Logic exposing (inCheck, canMakeMove, canMoveTile, loopUntilCanMovePiece)
+import Logic exposing (notInCheck, inCheck, canMakeMove, canMoveTile, loopUntilCanMovePiece)
 
-import Debug
 import Random exposing (Seed, initialSeed)
 
 checkValidGame: Input -> GameState -> GameState
-checkValidGame input gameState =  if gameFinished gameState
-                                      then { gameState | gameProgress <- colorLost gameState.turn }
-                                      else (checkPreConditions input gameState) |> stepGame input |> checkPostCondition
+checkValidGame input gameState =  let
+                                    newGameState = gameState |> checkPreConditions input |>updateGameProgress
+                                  in if gameFinished newGameState
+                                      then newGameState
+                                      else newGameState |> stepGame input |> checkPostCondition
 
 checkPreConditions: Input -> GameState -> GameState
 checkPreConditions input gameState =
@@ -50,16 +51,20 @@ checkPostCondition gameState = gameState
 switchMayhem: GameState -> GameState
 switchMayhem g = let x = not g.mayhem in { g | mayhem <- x }
 
+updateGameProgress: GameState -> GameState
+updateGameProgress gameState = case gameState.seed of
+                                Nothing -> gameState
+                                Just seed ->  let
+                                                maybePiece = loopUntilCanMovePiece gameState.board gameState.turn seed
+                                              in case maybePiece of
+                                                  Nothing ->
+                                                    if notInCheck gameState.board gameState.turn
+                                                      then { gameState | gameProgress <- Draw }
+                                                      else { gameState | gameProgress <- colorLost gameState.turn }
+                                                  otherwise -> gameState
+
 gameFinished: GameState -> Bool
-gameFinished gameState = case gameState.seed of
-                          Nothing -> False
-                          Just seed ->
-                                      let
-                                        maybePiece = loopUntilCanMovePiece gameState.board gameState.turn seed
-                                      in
-                                        case maybePiece of
-                                          Nothing -> True
-                                          otherwise -> False
+gameFinished gameState = gameState.gameProgress /= InProgress
 
 moveCursorToOrigin: GameState -> GameState
 moveCursorToOrigin gameState = case gameState.turn of
@@ -106,29 +111,29 @@ colorLost color = case color of
                   Piece.White -> BlackWon
 
 
-attemptMove: GameState -> Tile -> Position -> Position -> (GameState -> GameState) -> GameState
-attemptMove gameState tile from to f =
-                            case gameState.seed of
-                              Nothing -> gameState
-                              Just seed ->
-                                let
-                                  possibleMovement = loopUntilCanMovePiece gameState.board gameState.turn seed
-                                in
-                                  case possibleMovement of
-                                    Nothing -> { gameState | gameProgress <- Debug.log "lost" (colorLost gameState.turn) }
-                                    Just (possible) -> if canMoveTile gameState.board gameState.turn tile from to
-                                                        then f (makeMove gameState tile from to)
-                                                        else f gameState
+--attemptMove: GameState -> Tile -> Position -> Position -> (GameState -> GameState) -> GameState
+--attemptMove gameState tile from to f =
+--                            case gameState.seed of
+--                              Nothing -> gameState
+--                              Just seed ->
+--                                let
+--                                  possibleMovement = loopUntilCanMovePiece gameState.board gameState.turn seed
+--                                in
+--                                  case possibleMovement of
+--                                    Nothing -> { gameState | gameProgress <- colorLost gameState.turn }
+--                                    Just (possible) -> if canMoveTile gameState.board gameState.turn tile from to
+--                                                        then f (makeMove gameState tile from to)
+--                                                        else f gameState
+
+attemptMove gameState tile from to f = if canMoveTile gameState.board gameState.turn tile from to
+                              then f (makeMove gameState tile from to)
+                              else f gameState
 
 makeMove: GameState -> Tile -> Position -> Position -> GameState
-makeMove g tile from to = let
-                            player = g.turn
-                            board = promotePossiblePawns (Board.makeMove g.board from to) tile to
-                          in
-                          moveCursorToOrigin {
-                            g | board <- board,
+makeMove gameState tile from to = moveCursorToOrigin {
+                            gameState | board <- promotePossiblePawns (Board.makeMove gameState.board from to) tile to,
                             selected <- Nothing,
-                            turn <- case g.turn of
+                            turn <- case gameState.turn of
                                   Piece.White -> Piece.Black
                                   Piece.Black -> Piece.White
                           }
